@@ -2,8 +2,12 @@ const express = require('express');
 const oracledb = require('oracledb');
 const db = require("../db");
 const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
+const jwtAuthentication = require('../auth');
 const router = express.Router();
 
+const JWT_KEY = "secret_key";
+// ↑ .env로 관리해야 함
 const saltRounds = 10;
 
 router.post('/login', async (req, res) => {
@@ -21,21 +25,31 @@ router.post('/login', async (req, res) => {
 
     let isLogin = false;
     let message = "로그인 실패!";
+    let token = null;
 
     if(result.rows.length > 0) {
       let match = await bcrypt.compare(pwd, result.rows[0].PWD);
       if(match){
         isLogin = true;
         message = "로그인 성공!";
+        let payload = {
+          userId : result.rows[0].USERID,
+          userName : result.rows[0].USERNAME,
+          role : result.rows[0].ROLE
+        }
+        
+        token = jwt.sign(payload, JWT_KEY, {expiresIn : '1h'});
       }
+    }
 
     res.json({
-        result : "isLogin",
-        message : message
+        result : isLogin,
+        message : message,
+        token : token
         // list : result.rows
     });
 
-  }}catch (error) {
+  } catch (error) {
     console.error('Error executing query', error);
     res.status(500).send('Error executing query');
   } finally {
@@ -64,9 +78,42 @@ router.post('/join', async (req, res) => {
     }
 
     res.json({
-        result : "isLogin",
+        result : isLogin,
         message : message
         // list : result.rows
+    });
+    
+  } catch (error) {
+    console.error('Error executing query', error);
+    res.status(500).send('Error executing query');
+  } finally {
+    await connection.close();
+  }
+});
+
+router.get('/:userId', jwtAuthentication, async (req, res) => {
+  const { userId } = req.params;
+  let connection;
+  try {
+    connection = await db.getConnection();
+    const result = await connection.execute(
+      `
+        SELECT U.*, CNT
+        FROM TBL_USER U
+        INNER JOIN (
+            SELECT COUNT(*) AS CNT, USERID
+            FROM TBL_FEED
+            GROUP BY USERID
+        ) T ON U.USERID = T.USERID
+        WHERE U.USERID = :userId
+      `,
+      [userId],
+      {outFormat: oracledb.OUT_FORMAT_OBJECT}
+    );
+    
+    res.json({
+        result : "success",
+        info : result.rows[0]
     });
     
   } catch (error) {

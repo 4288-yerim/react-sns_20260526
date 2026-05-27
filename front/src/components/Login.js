@@ -3,7 +3,7 @@ import { TextField, Button, Container, Typography, Box } from '@mui/material';
 import { Link, useNavigate } from 'react-router-dom';
 
 function Login() {
-  let navigate = useNavigate();
+  let navigator = useNavigate();
   let idRef = useRef("");
   let pwdRef = useRef("");
 
@@ -47,7 +47,11 @@ function Login() {
               .then(res => res.json())
               .then(data => {
                 alert(data.message);
-                navigate("/feed");
+                if(data.result){
+                  localStorage.setItem("token", data.token)
+                  navigator("/feed");
+                }
+                
             })
               .catch(err => {
                 alert("서버 에러 발생!")
