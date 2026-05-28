@@ -4,10 +4,12 @@ const db = require("../db");
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const jwtAuthentication = require('../auth');
+require("dotenv").config();
+
 const router = express.Router();
 
-const JWT_KEY = "secret_key";
-// ↑ .env로 관리해야 함
+const JWT_KEY = process.env.JWT_KEY;
+
 const saltRounds = 10;
 
 router.post('/login', async (req, res) => {

@@ -1,6 +1,6 @@
 import React from 'react';
 import { Drawer, List, ListItem, ListItemText, Typography, Toolbar, ListItemIcon } from '@mui/material';
-import { Home, Add, AccountCircle } from '@mui/icons-material';
+import { Home, Add, AccountCircle, School, DarkMode } from '@mui/icons-material';
 import { Link } from 'react-router-dom';
 
 function Menu() {
@@ -21,23 +21,47 @@ function Menu() {
         SNS 메뉴
       </Typography>
       <List>
+
         <ListItem button component={Link} to="/feed">
           <ListItemIcon>
             <Home />
           </ListItemIcon>
           <ListItemText primary="피드" />
         </ListItem>
+
         <ListItem button component={Link} to="/register">
           <ListItemIcon>
             <Add />
           </ListItemIcon>
           <ListItemText primary="등록" />
         </ListItem>
+
         <ListItem button component={Link} to="/mypage">
           <ListItemIcon>
             <AccountCircle />
           </ListItemIcon>
           <ListItemText primary="마이페이지" />
+        </ListItem>
+
+        <ListItem button component={Link} to="/context1">
+          <ListItemIcon>
+            <School />
+          </ListItemIcon>
+          <ListItemText primary="Context 실습1" />
+        </ListItem>
+
+        <ListItem button component={Link} to="/context2">
+          <ListItemIcon>
+            <School />
+          </ListItemIcon>
+          <ListItemText primary="Context 실습2" />
+        </ListItem>
+
+        <ListItem button component={Link} to="/context3">
+          <ListItemIcon>
+            <DarkMode />
+          </ListItemIcon>
+          <ListItemText primary="Context 다크모드" />
         </ListItem>
       </List>
     </Drawer>
