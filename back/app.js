@@ -20,6 +20,7 @@ app.use(express.json())
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, '.')); // .은 경로
 
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.use("/sample", sampleRouter);
 app.use("/user", userRouter);
 app.use("/feed", feedRouter);
